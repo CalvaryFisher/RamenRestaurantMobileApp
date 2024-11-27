@@ -1,0 +1,77 @@
+# Ignore build and gradle-related files
+/build
+/.gradle
+/local.properties
+
+# Ignore generated files
+*.iml
+*.apk
+*.ap_
+*.dex
+*.class
+*.jar
+*.keystore
+
+# Ignore IDE-specific files
+/.idea/
+/*.idea/
+/*.vscode/
+/*.cxx/
+/*.kotlin_metadata/
+
+# Ignore test and log outputs
+*.log
+test-output/
+reports/
+
+# Ignore user-specific configuration
+*.bat
+*.swp
+*.swo
+*.DS_Store
+*~.tmp
+
+# Ignore cache files
+.cache/
+/out/
+/captures/
+/exploded-aar/
+/flutter_build/
+
+# Ignore dependencies and cache
+*.lock
+package-lock.json
+yarn.lock
+
+# Ignore temporary files
+*.tmp
+*.log
+*.bak
+*.orig
+
+# Ignore Android Studio-specific files
+/.idea/
+/*.iml
+/.DS_Store
+/.cache/
+/.gradle/
+local.properties
+
+# Ignore NDK files (if using native code)
+obj/
+libs/
+.externalNativeBuild/
+
+# Ignore JetBrains IDEs
+*.ipr
+*.iws
+*.idea/workspace.xml
+*.idea/tasks.xml
+
+# Ignore OS-specific files
+Thumbs.db
+.DS_Store
+ehthumbs.db
+
+# Ignore personal environment files
+.env
