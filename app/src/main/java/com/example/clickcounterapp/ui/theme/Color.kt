@@ -12,6 +12,6 @@ val Pink40 = Color(0xFF7D5260)
 
 val Text = Color(0xFF050315)        // Black
 val Background = Color(0xFFFFF6E2)   // Beige Scroll
-val Primary = Color(0xFF00067E)     // Midnight Purple
+val Primary = Color(0xFF0E0E41)     // Midnight Purple
 val Secondary = Color(0xFFFBFBFE)  // White
 val Accent = Color(0xFF927000)      // Molten Gold

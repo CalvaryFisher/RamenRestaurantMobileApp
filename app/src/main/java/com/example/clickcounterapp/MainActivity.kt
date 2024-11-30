@@ -33,6 +33,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.items
 
 // Importing colors:
 import com.example.clickcounterapp.ui.theme.*
@@ -42,20 +43,117 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                Navigation()
+                MainApp()
             }
         }
     }
 }
 
-// Setting up Navigation:
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-fun Navigation() {
-    val navController = rememberNavController()
-    NavHost(navController, startDestination = "welcome") {
-        composable("welcome") { WelcomeScreen(navController) }
-        composable("menu") { MenuScreen(navController) }
-    }
+/**
+ * MainApp:
+ * Goal: This function sets up navigation, and uses a scaffold to set up a top
+ * bar and a bottom bar. Each screen/page is displayed within the content section.
+ * */
+fun MainApp(){
+    val navController = rememberNavController()  // Initialize the NavController
+
+    Scaffold(
+        topBar = {  //
+            TopAppBar(
+                title = { Text("My App") },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Primary,
+                    titleContentColor = Secondary)
+            )
+        },
+        bottomBar = {
+            BottomAppBar (
+                containerColor = Primary,
+            )
+            {
+                //Text("Bottom Bar")  // You can customize this based on the current screen
+                // Bottom Bar
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = Primary),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    //Bottom Bar:
+                    Row(
+                        modifier = Modifier
+                            .height(70.dp)
+                            .width(250.dp)
+                            .clip(RoundedCornerShape(28.dp))  // Oval shape
+                            .border(2.dp, SolidColor(Text), RoundedCornerShape(28.dp))
+                            .background(color = Secondary)
+                        //.align(Alignment.BottomCenter)
+                    ){
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("menu") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Secondary,
+                                contentColor = Text
+                            )
+                        )
+                        {
+                            Text(
+                                text = "Menu",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
+
+                        VerticalDivider(
+                            color = Text,
+                            modifier = Modifier
+                                .width(2.dp)
+                                .fillMaxHeight()
+                        )
+
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = { navController.navigate("order") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Secondary,
+                                contentColor = Text
+                            )
+                        )
+                        {
+                            Text(
+                                text = "My Order",
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .wrapContentHeight(Alignment.CenterVertically),
+                                style = MaterialTheme.typography.bodyLarge
+                                //textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                        }
+                    }
+                }
+            }
+        },
+        content = { innerPadding ->
+            // NavHost defines the navigation graph
+            NavHost(
+                navController = navController,
+                startDestination = "welcome",  // Set Welcome Page as the start
+                modifier = Modifier.padding(innerPadding)  // Prevents overlap with bars
+            ) {
+                composable("welcome") { WelcomeScreen(navController) }
+                composable("menu") { MenuScreen(navController) }
+                //composable("order") { OrderScreen(navController) }
+            }
+        }
+    )
 }
 
 // Defining each screen:
@@ -74,102 +172,81 @@ fun WelcomeScreen(navController: NavController = rememberNavController()) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(  // Text component
-            text = "Welcome Page",
-            style = MaterialTheme.typography.headlineLarge,
-            color = Text
-        )
-        //Bottom Bar:
-        Row(
-            modifier = Modifier
-                .height(56.dp)
-                .width(200.dp)
-                .clip(RoundedCornerShape(28.dp))  // Oval shape
-                .border(2.dp, SolidColor(Text), RoundedCornerShape(28.dp))
-                .background(color = Secondary)
-                //.align(Alignment.BottomCenter)
-            ){
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { navController.navigate("menu") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Secondary,
-                        contentColor = Text
-                    )
-                )
-                {
-                    Text(
-                        text = "Menu",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentHeight(Alignment.CenterVertically),
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                }
 
-                VerticalDivider(
-                    color = Text,
-                    modifier = Modifier
-                        .width(2.dp)
-                        .fillMaxHeight()
-                )
-
-                Button(
-                    modifier = Modifier.weight(1f),
-                    onClick = { navController.navigate("order") },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Secondary,
-                        contentColor = Text
-                    )
-                )
-                {
-                    Text(
-                        text = "Order",
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentHeight(Alignment.CenterVertically),
-                        //textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                    )
-                }
-        }
     }
 }
 
-@Preview
+//@Preview
 @Composable
 fun WelcomeScreenPreview(){
     WelcomeScreen()
 }
 
-
-// This defines the components on the menu page, a column to store everything,
-// and text saying where we are.
+/**
+ * MenuScreen: defines a menu with scrolling items.
+ * Clicking each item brings the user to that items details page.
+ * */
 @Composable
-fun MenuScreen(navController: NavController) {
-    //val itemList = List(10) {"Item #$it"}   // Defining lists of items to show
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun MenuScreen(navController: NavController = rememberNavController()) {
+
+    // Defines list of sample menu items with titles
+    val sampleMenuItems = listOf(
+        MenuItem("Cosmic Tonkotsu"),
+        MenuItem("Sushi"),
+        MenuItem("Tempura"),
+        MenuItem("Udon"),
+        MenuItem("Takoyaki")
+    )
+
+    // Defines a container for menu list
+    Box(modifier = Modifier.background(Background)){
+        MenuListScreen(  // Lists items from menuItems list
+            menuItems = sampleMenuItems,
+            onItemClick = { clickedItem ->
+                //navController.navigate("detail_${menuItems.title}")  // Handle the click event
+            }
+        )
+    }
+}
+
+@Preview
+@Composable
+// Used to preview UI.
+fun MenuScreenPreview(){
+    MenuScreen()
+}
+
+/**
+ * Defines a single menu item card.
+ * Each card has details and gets passed a clickable activity.
+ */
+@Composable
+fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(16.dp)  // Padding for each item
     ) {
         Text(
-            text = "Menu Page",
-            style = MaterialTheme.typography.headlineLarge
+            text = item.title,
+            style = MaterialTheme.typography.titleLarge  // Styling for the item name
         )
+    }
+}
 
-        LazyColumn {
-            items(10) {index ->
-                Text("Item #$index",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(16.dp)
-                )
-                Button(onClick = { navController.navigate("welcome")}){
-                    Text("Go to Welcome Page")
-                }
-            }
-
+/***
+ * Lists given list of MenuItems.
+ */
+@Composable
+fun MenuListScreen(menuItems: List<MenuItem>, onItemClick: (MenuItem) -> Unit) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
+        items(menuItems) { item ->
+            MenuItemCard(item = item, onClick = { onItemClick(item) })
         }
-
-
     }
 }
