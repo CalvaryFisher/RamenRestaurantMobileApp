@@ -1,6 +1,4 @@
 package com.example.clickcounterapp
-
-// Dependencies to set up layout:
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -8,12 +6,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-
-// dependencies to set up navigation graph:
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,18 +15,11 @@ import android.os.Bundle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.*
 import androidx.compose.ui.graphics.SolidColor
-
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.items
 
 // Importing colors:
@@ -63,7 +50,7 @@ fun MainApp(){
     Scaffold(
         topBar = {  //
             TopAppBar(
-                title = { Text("My App") },
+                title = { Text("Luna Noodles") },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Primary,
                     titleContentColor = Secondary)
@@ -74,71 +61,7 @@ fun MainApp(){
                 containerColor = Primary,
             )
             {
-                //Text("Bottom Bar")  // You can customize this based on the current screen
-                // Bottom Bar
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(color = Primary),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
-                    //Bottom Bar:
-                    Row(
-                        modifier = Modifier
-                            .height(70.dp)
-                            .width(250.dp)
-                            .clip(RoundedCornerShape(28.dp))  // Oval shape
-                            .border(2.dp, SolidColor(Text), RoundedCornerShape(28.dp))
-                            .background(color = Secondary)
-                        //.align(Alignment.BottomCenter)
-                    ){
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = { navController.navigate("menu") },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Secondary,
-                                contentColor = Text
-                            )
-                        )
-                        {
-                            Text(
-                                text = "Menu",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .wrapContentHeight(Alignment.CenterVertically),
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-
-                        VerticalDivider(
-                            color = Text,
-                            modifier = Modifier
-                                .width(2.dp)
-                                .fillMaxHeight()
-                        )
-
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = { navController.navigate("order") },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Secondary,
-                                contentColor = Text
-                            )
-                        )
-                        {
-                            Text(
-                                text = "My Order",
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .wrapContentHeight(Alignment.CenterVertically),
-                                style = MaterialTheme.typography.bodyLarge
-                                //textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                        }
-                    }
-                }
+                BottomNavButton(navController)
             }
         },
         content = { innerPadding ->
@@ -150,10 +73,79 @@ fun MainApp(){
             ) {
                 composable("welcome") { WelcomeScreen(navController) }
                 composable("menu") { MenuScreen(navController) }
+                composable("item_details") { MenuItemDetailsScreen(navController) }
+                //composable("details/${clickedItem.title}") {DetailsScreen(navController)}
                 //composable("order") { OrderScreen(navController) }
             }
         }
     )
+}
+
+@Composable
+fun BottomNavButton(navController: NavController){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Primary),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        //Bottom Bar:
+        Row(
+            modifier = Modifier
+                .height(70.dp)
+                .width(250.dp)
+                .clip(RoundedCornerShape(28.dp))  // Oval shape
+                .border(2.dp, SolidColor(Text), RoundedCornerShape(28.dp))
+                .background(color = Secondary)
+            //.align(Alignment.BottomCenter)
+        ){
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = { navController.navigate("menu") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Secondary,
+                    contentColor = Text
+                )
+            )
+            {
+                Text(
+                    text = "Menu",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentHeight(Alignment.CenterVertically),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+            }
+
+            VerticalDivider(
+                color = Text,
+                modifier = Modifier
+                    .width(2.dp)
+                    .fillMaxHeight()
+            )
+
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = {navController.navigate("order") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Secondary,
+                    contentColor = Text
+                )
+            )
+            {
+                Text(
+                    text = "My Order",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentHeight(Alignment.CenterVertically),
+                    style = MaterialTheme.typography.bodyLarge
+                    //textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                )
+            }
+        }
+    }
 }
 
 // Defining each screen:
@@ -200,12 +192,15 @@ fun MenuScreen(navController: NavController = rememberNavController()) {
 
     // Defines a container for menu list
     Box(modifier = Modifier.background(Background)){
-        MenuListScreen(  // Lists items from menuItems list
-            menuItems = sampleMenuItems,
-            onItemClick = { clickedItem ->
-                //navController.navigate("detail_${menuItems.title}")  // Handle the click event
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            items(sampleMenuItems) { item ->
+                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
             }
-        )
+        }
     }
 }
 
@@ -219,7 +214,10 @@ fun MenuScreenPreview(){
 /**
  * Defines a single menu item card.
  * Each card has details and gets passed a clickable activity.
- */
+ * @param: item, a MenuItem (includes data for each item)
+ * @param: onclick: A function with no parameters and returns no values
+ *      (the () indicates no parameters, and the -> Unit indicates it takes no values.)
+ * */
 @Composable
 fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
     Row(
@@ -239,14 +237,25 @@ fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
  * Lists given list of MenuItems.
  */
 @Composable
-fun MenuListScreen(menuItems: List<MenuItem>, onItemClick: (MenuItem) -> Unit) {
-    LazyColumn(
+fun MenuList(menuItems: List<MenuItem>) {
+
+}
+
+@Composable
+fun MenuItemDetailsScreen(navController: NavController = rememberNavController()){
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
+            .background(color = Background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        items(menuItems) { item ->
-            MenuItemCard(item = item, onClick = { onItemClick(item) })
-        }
+        Text("Hello, welcome to the details for your item.")
     }
+}
+
+@Preview
+@Composable
+fun MenuItemDetailsScreenPreview(){
+    MenuItemDetailsScreen()
 }
