@@ -22,6 +22,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.items
 
+import androidx.lifecycle.ViewModel //ViewModel used to store menu and current order data
+
 // Importing colors:
 import com.example.clickcounterapp.ui.theme.*
 
@@ -183,11 +185,11 @@ fun MenuScreen(navController: NavController = rememberNavController()) {
 
     // Defines list of sample menu items with titles
     val sampleMenuItems = listOf(
-        MenuItem("Cosmic Tonkotsu"),
-        MenuItem("Sushi"),
-        MenuItem("Tempura"),
-        MenuItem("Udon"),
-        MenuItem("Takoyaki")
+        MenuItem("Cosmic Tonkotsu", "10.99"),
+        MenuItem("Sushi", "12.50"),
+        MenuItem("Tempura", "11.99"),
+        MenuItem("Udon", "12.75"),
+        MenuItem("Takoyaki", "6.75")
     )
 
     // Defines a container for menu list
@@ -216,20 +218,29 @@ fun MenuScreenPreview(){
  * Each card has details and gets passed a clickable activity.
  * @param: item, a MenuItem (includes data for each item)
  * @param: onclick: A function with no parameters and returns no values
- *      (the () indicates no parameters, and the -> Unit indicates it takes no values.)
+ *      (the () indicates no parameters for the onClick function,
+ *      and the -> Unit indicates it returns no values.)
  * */
 @Composable
 fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(16.dp)  // Padding for each item
-    ) {
-        Text(
-            text = item.title,
-            style = MaterialTheme.typography.titleLarge  // Styling for the item name
-        )
+    Column(
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp)  // Padding for each item
+        ) {
+            Text(
+                text = item.price,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.width(20.dp))
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
     }
 }
 
@@ -258,4 +269,26 @@ fun MenuItemDetailsScreen(navController: NavController = rememberNavController()
 @Composable
 fun MenuItemDetailsScreenPreview(){
     MenuItemDetailsScreen()
+}
+
+@Composable
+fun MyOrderScreen(navController: NavController = rememberNavController()){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = "Welcome to your order",
+            style = MaterialTheme.typography.displaySmall
+        )
+    }
+}
+
+@Preview
+@Composable
+fun MyOrderScreenPreview(){
+    MyOrderScreen()
 }
