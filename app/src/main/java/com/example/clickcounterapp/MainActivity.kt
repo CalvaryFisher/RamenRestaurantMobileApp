@@ -1,31 +1,52 @@
 package com.example.clickcounterapp
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import android.os.Bundle
-import androidx.compose.foundation.background
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.lazy.items
-
-import androidx.lifecycle.ViewModel //ViewModel used to store menu and current order data
-
-// Importing colors:
-import com.example.clickcounterapp.ui.theme.*
+import com.example.clickcounterapp.ui.theme.Background
+import com.example.clickcounterapp.ui.theme.CurrentOrder
+import com.example.clickcounterapp.ui.theme.Primary
+import com.example.clickcounterapp.ui.theme.Secondary
+import com.example.clickcounterapp.ui.theme.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -67,6 +88,11 @@ fun MainApp(){
             }
         },
         content = { innerPadding ->
+            // Setting up list of menu items:
+            val currentMenu = MenuItems()
+            // Setting up list of current orders:
+            val currentOrder = CurrentOrder()
+
             // NavHost defines the navigation graph
             NavHost(
                 navController = navController,
@@ -74,14 +100,146 @@ fun MainApp(){
                 modifier = Modifier.padding(innerPadding)  // Prevents overlap with bars
             ) {
                 composable("welcome") { WelcomeScreen(navController) }
-                composable("menu") { MenuScreen(navController) }
+                composable("menu") { MenuScreen(navController, currentMenu) }
                 composable("item_details") { MenuItemDetailsScreen(navController) }
                 //composable("details/${clickedItem.title}") {DetailsScreen(navController)}
-                //composable("order") { OrderScreen(navController) }
+                composable("order") { MyOrderScreen(navController, currentOrder) }
             }
         }
     )
 }
+
+// Defining each screen:
+@Composable
+// WelcomeScreen intakes a navController object
+// (used to navigate between page since it remembers where they all are.)
+fun WelcomeScreen(navController: NavController = rememberNavController()) {
+    // We place everything in the page within a column, we center and fill this column so
+    // it all looks nice and neat
+
+    // Bottom Bar
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+    }
+}
+
+//@Preview
+@Composable
+fun WelcomeScreenPreview(){
+    WelcomeScreen()
+}
+
+/**
+ * MenuScreen: defines a menu with scrolling items.
+ * Clicking each item brings the user to that items details page.
+ * */
+@Composable
+fun MenuScreen(navController: NavController = rememberNavController(), currentMenu: MenuItems) {
+    Box(modifier = Modifier.background(Background)){
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            items(currentMenu.myItems) { item ->
+                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+// Used to preview UI.
+fun MenuScreenPreview(){
+    val currentMenu = MenuItems()
+    MenuScreen(rememberNavController(), currentMenu)
+}
+
+/**
+ * Defines a single menu item card.
+ * Each card has details and gets passed a clickable activity.
+ * @param: item, a MenuItem (includes data for each item)
+ * @param: onclick: A function with no parameters and returns no values
+ *      (the () indicates no parameters for the onClick function,
+ *      and the -> Unit indicates it returns no values.)
+ * */
+@Composable
+fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
+    Column(
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(16.dp)  // Padding for each item
+        ) {
+            Text(
+                text = item.price,
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.width(20.dp))
+            Text(
+                text = item.title,
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+
+    }
+}
+
+@Composable
+fun MenuItemDetailsScreen(navController: NavController = rememberNavController()){
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Background),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text("Hello, welcome to the details for your item.")
+    }
+}
+
+@Preview
+@Composable
+fun MenuItemDetailsScreenPreview(){
+    MenuItemDetailsScreen()
+}
+
+@Composable
+fun MyOrderScreen(navController: NavController = rememberNavController(), currentOrder: CurrentOrder){
+    Box(modifier = Modifier.background(Background)){
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            items(currentOrder.orderItems) { item ->
+                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+fun MyOrderScreenPreview(){
+    // Setting up list of menu items:
+    val currentMenu = MenuItems()
+    // Setting up list of current orders:
+    val currentOrder = CurrentOrder()
+    val testItem = MenuItem("Beef Stew", "10.99")
+    currentOrder.orderItems.add(testItem)
+    MyOrderScreen(rememberNavController(), currentOrder)
+}
+
 
 @Composable
 fun BottomNavButton(navController: NavController){
@@ -148,147 +306,4 @@ fun BottomNavButton(navController: NavController){
             }
         }
     }
-}
-
-// Defining each screen:
-@Composable
-// WelcomeScreen intakes a navController object
-// (used to navigate between page since it remembers where they all are.)
-fun WelcomeScreen(navController: NavController = rememberNavController()) {
-    // We place everything in the page within a column, we center and fill this column so
-    // it all looks nice and neat
-
-    // Bottom Bar
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-
-    }
-}
-
-//@Preview
-@Composable
-fun WelcomeScreenPreview(){
-    WelcomeScreen()
-}
-
-/**
- * MenuScreen: defines a menu with scrolling items.
- * Clicking each item brings the user to that items details page.
- * */
-@Composable
-fun MenuScreen(navController: NavController = rememberNavController()) {
-
-    // Defines list of sample menu items with titles
-    val sampleMenuItems = listOf(
-        MenuItem("Cosmic Tonkotsu", "10.99"),
-        MenuItem("Sushi", "12.50"),
-        MenuItem("Tempura", "11.99"),
-        MenuItem("Udon", "12.75"),
-        MenuItem("Takoyaki", "6.75")
-    )
-
-    // Defines a container for menu list
-    Box(modifier = Modifier.background(Background)){
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        ) {
-            items(sampleMenuItems) { item ->
-                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-// Used to preview UI.
-fun MenuScreenPreview(){
-    MenuScreen()
-}
-
-/**
- * Defines a single menu item card.
- * Each card has details and gets passed a clickable activity.
- * @param: item, a MenuItem (includes data for each item)
- * @param: onclick: A function with no parameters and returns no values
- *      (the () indicates no parameters for the onClick function,
- *      and the -> Unit indicates it returns no values.)
- * */
-@Composable
-fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
-    Column(
-    ){
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(16.dp)  // Padding for each item
-        ) {
-            Text(
-                text = item.price,
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Spacer(Modifier.width(20.dp))
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-        }
-    }
-}
-
-/***
- * Lists given list of MenuItems.
- */
-@Composable
-fun MenuList(menuItems: List<MenuItem>) {
-
-}
-
-@Composable
-fun MenuItemDetailsScreen(navController: NavController = rememberNavController()){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text("Hello, welcome to the details for your item.")
-    }
-}
-
-@Preview
-@Composable
-fun MenuItemDetailsScreenPreview(){
-    MenuItemDetailsScreen()
-}
-
-@Composable
-fun MyOrderScreen(navController: NavController = rememberNavController()){
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color = Background),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Text(
-            text = "Welcome to your order",
-            style = MaterialTheme.typography.displaySmall
-        )
-    }
-}
-
-@Preview
-@Composable
-fun MyOrderScreenPreview(){
-    MyOrderScreen()
 }
