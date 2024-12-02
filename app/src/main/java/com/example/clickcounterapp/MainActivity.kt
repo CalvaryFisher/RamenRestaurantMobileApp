@@ -112,6 +112,7 @@ fun MainApp(){
                 composable("item_details") { MenuItemDetailsScreen(navController, menuItem = MenuItem("Error", "0.00")) }
                 //composable("details/${clickedItem.title}") {DetailsScreen(navController)}
                 composable("order") { MyOrderScreen(navController, currentOrder) }
+                composable("confirm_screen") { ConfirmationScreen() }
             }
         }
     )
@@ -249,23 +250,9 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
     Column(
         modifier = Modifier
             .background(Background)
-            //.fillMaxSize()
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center
     ){
-        Text(
-            text = "Current Items: ",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp)
-
-        )
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)
-        ) {
-            items(currentOrder.orderItems) { item ->
-                MenuItemCard(item = item, "Remove", onClick = {currentOrder.orderItems.remove(item)})
-            }
-        }
         var total = currentOrder.currentTotalAsString()
         Text(
             text = "Total: $$total",
@@ -273,7 +260,36 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
             modifier = Modifier.padding(16.dp)
 
         )
+        HorizontalDivider(thickness = 2.dp, color = Color.Black)
+        Text(
+            text = "Current Items: ",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+
+        )
+        HorizontalDivider(thickness = Dp.Hairline, color = Color.Black)
+        LazyColumn(
+            modifier = Modifier
+                //.fillMaxWidth()
+                .weight(1f)
+                .padding(8.dp)
+        ) {
+            items(currentOrder.orderItems) { item ->
+                MenuItemCard(item = item, "Remove", onClick = {currentOrder.orderItems.remove(item)})
+                HorizontalDivider(thickness = Dp.Hairline, color = Color.Black)
+            }
+        }
+        Button(
+            onClick = {sendOrder(navController, currentOrder)}
+        ){
+            Text("Pay Now")
+        }
     }
+}
+
+fun sendOrder(navController: NavController, currentOrder: CurrentOrder){
+    navController.navigate("confirm_screen")
+    currentOrder.orderItems.clear()
 }
 
 @Preview
@@ -286,6 +302,17 @@ fun MyOrderScreenPreview(){
     val testItem = MenuItem("Beef Stew", "10.99")
     currentOrder.orderItems.add(testItem)
     MyOrderScreen(rememberNavController(), currentOrder)
+}
+
+@Composable
+fun ConfirmationScreen(){
+    Column(modifier = Modifier
+        .fillMaxSize()
+        .background(Background)
+    ){
+        Text("Stellar!")
+        Text("We hope you enjoy!")
+    }
 }
 
 @Composable
