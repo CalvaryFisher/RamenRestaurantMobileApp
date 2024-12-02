@@ -3,6 +3,7 @@ package com.example.clickcounterapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -38,8 +39,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -124,11 +129,18 @@ fun WelcomeScreen(navController: NavController = rememberNavController()) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Background),
+            .background(color = Primary),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-
+        val image = painterResource(R.drawable.menupicture)
+        Image(
+            modifier = Modifier
+                .fillMaxSize(),
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
@@ -152,6 +164,7 @@ fun MenuScreen(navController: NavController = rememberNavController(), currentMe
         ) {
             items(currentMenu.myItems) { item ->
                 MenuItemCard(item = item, "Add",onClick = {currentOrder.orderItems.add(item)})
+                HorizontalDivider(thickness = Dp.Hairline, color = Color.Black)
             }
         }
     }
@@ -185,20 +198,28 @@ fun MenuItemCard(item: MenuItem, buttonTitle: String,onClick: () -> Unit) {
                 .padding(16.dp)  // Padding for each item
         ) {
             Text(
-                text = item.price,
-                style = MaterialTheme.typography.titleSmall,
-            )
-            Spacer(Modifier.width(20.dp))
-            Text(
                 text = item.title,
                 style = MaterialTheme.typography.titleLarge
             )
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                text = "$${item.price}",
+                style = MaterialTheme.typography.titleSmall,
+            )
+            Spacer(Modifier.width(20.dp))
+
+        }
         Button(
             onClick = onClick
-        ){
+        ) {
             Text(text = buttonTitle)
         }
+        Spacer(Modifier.width(20.dp))
+        //HorizontalDivider(Dp.Hairline)
     }
 }
 
@@ -247,7 +268,7 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
         }
         var total = currentOrder.currentTotalAsString()
         Text(
-            text = "Total: $total",
+            text = "Total: $$total",
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier.padding(16.dp)
 
