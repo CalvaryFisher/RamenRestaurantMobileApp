@@ -286,7 +286,7 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
 
         Button(
             onClick = {sendOrder(navController, currentOrder)},
-            Modifier.size(75.dp),
+            Modifier.size(100.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Primary,
                 contentColor = Secondary
