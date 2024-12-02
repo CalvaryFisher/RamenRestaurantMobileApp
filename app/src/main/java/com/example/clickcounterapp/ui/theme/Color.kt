@@ -15,3 +15,4 @@ val Background = Color(0xFFFFF6E2)   // Beige Scroll
 val Primary = Color(0xFF0E0E41)     // Midnight Purple
 val Secondary = Color(0xFFFBFBFE)  // White
 val Accent = Color(0xFF927000)      // Molten Gold
+val ConfirmationPageBackground = Color(0xFFfaf4e4)

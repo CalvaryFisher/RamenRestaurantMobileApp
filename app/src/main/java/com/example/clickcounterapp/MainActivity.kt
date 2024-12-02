@@ -46,11 +46,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.clickcounterapp.ui.theme.Background
+import com.example.clickcounterapp.ui.theme.ConfirmationPageBackground
 import com.example.clickcounterapp.ui.theme.CurrentOrder
 import com.example.clickcounterapp.ui.theme.Primary
 import com.example.clickcounterapp.ui.theme.Secondary
@@ -251,16 +253,9 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
         modifier = Modifier
             .background(Background)
             .fillMaxSize(),
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        var total = currentOrder.currentTotalAsString()
-        Text(
-            text = "Total: $$total",
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier.padding(16.dp)
-
-        )
-        HorizontalDivider(thickness = 2.dp, color = Color.Black)
         Text(
             text = "Current Items: ",
             style = MaterialTheme.typography.titleLarge,
@@ -279,10 +274,30 @@ fun MyOrderScreen(navController: NavController = rememberNavController(), curren
                 HorizontalDivider(thickness = Dp.Hairline, color = Color.Black)
             }
         }
+        HorizontalDivider(thickness = 2.dp, color = Color.Black)
+        var total = currentOrder.currentTotalAsString()
+        Text(
+            text = "Total: $$total",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+
+        )
+        Spacer(Modifier.width(20.dp))
+
         Button(
-            onClick = {sendOrder(navController, currentOrder)}
+            onClick = {sendOrder(navController, currentOrder)},
+            Modifier.size(75.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Primary,
+                contentColor = Secondary
+            )
+
         ){
-            Text("Pay Now")
+            Text("Pay Now", modifier = Modifier
+                .fillMaxSize()
+                .wrapContentHeight(Alignment.CenterVertically)
+            )
+
         }
     }
 }
@@ -304,14 +319,24 @@ fun MyOrderScreenPreview(){
     MyOrderScreen(rememberNavController(), currentOrder)
 }
 
+@Preview
 @Composable
 fun ConfirmationScreen(){
-    Column(modifier = Modifier
-        .fillMaxSize()
-        .background(Background)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(ConfirmationPageBackground),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ){
-        Text("Stellar!")
-        Text("We hope you enjoy!")
+        Text("Stellar!", fontSize = 40.sp)
+        Text("We hope you enjoy!", fontSize = 36.sp)
+        val image = painterResource(R.drawable.confirmation_page_pic)
+        Image(
+            painter = image,
+            contentDescription = null,
+            contentScale = ContentScale.Crop
+        )
     }
 }
 
