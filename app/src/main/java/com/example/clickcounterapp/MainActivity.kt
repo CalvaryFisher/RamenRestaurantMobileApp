@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +25,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -100,8 +103,8 @@ fun MainApp(){
                 modifier = Modifier.padding(innerPadding)  // Prevents overlap with bars
             ) {
                 composable("welcome") { WelcomeScreen(navController) }
-                composable("menu") { MenuScreen(navController, currentMenu) }
-                composable("item_details") { MenuItemDetailsScreen(navController) }
+                composable("menu") { MenuScreen(navController, currentMenu, currentOrder) }
+                composable("item_details") { MenuItemDetailsScreen(navController, menuItem = MenuItem("Error", "0.00")) }
                 //composable("details/${clickedItem.title}") {DetailsScreen(navController)}
                 composable("order") { MyOrderScreen(navController, currentOrder) }
             }
@@ -140,7 +143,7 @@ fun WelcomeScreenPreview(){
  * Clicking each item brings the user to that items details page.
  * */
 @Composable
-fun MenuScreen(navController: NavController = rememberNavController(), currentMenu: MenuItems) {
+fun MenuScreen(navController: NavController = rememberNavController(), currentMenu: MenuItems, currentOrder: CurrentOrder) {
     Box(modifier = Modifier.background(Background)){
         LazyColumn(
             modifier = Modifier
@@ -148,7 +151,7 @@ fun MenuScreen(navController: NavController = rememberNavController(), currentMe
                 .padding(8.dp)
         ) {
             items(currentMenu.myItems) { item ->
-                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
+                MenuItemCard(item = item, "Add",onClick = {currentOrder.orderItems.add(item)})
             }
         }
     }
@@ -159,7 +162,8 @@ fun MenuScreen(navController: NavController = rememberNavController(), currentMe
 // Used to preview UI.
 fun MenuScreenPreview(){
     val currentMenu = MenuItems()
-    MenuScreen(rememberNavController(), currentMenu)
+    val currentOrder = CurrentOrder()
+    MenuScreen(rememberNavController(), currentMenu, currentOrder)
 }
 
 /**
@@ -171,13 +175,13 @@ fun MenuScreenPreview(){
  *      and the -> Unit indicates it returns no values.)
  * */
 @Composable
-fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
+fun MenuItemCard(item: MenuItem, buttonTitle: String,onClick: () -> Unit) {
     Column(
     ){
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(onClick = onClick)
+                //.clickable(onClick = onClick)
                 .padding(16.dp)  // Padding for each item
         ) {
             Text(
@@ -190,12 +194,16 @@ fun MenuItemCard(item: MenuItem, onClick: () -> Unit) {
                 style = MaterialTheme.typography.titleLarge
             )
         }
-
+        Button(
+            onClick = onClick
+        ){
+            Text(text = buttonTitle)
+        }
     }
 }
 
 @Composable
-fun MenuItemDetailsScreen(navController: NavController = rememberNavController()){
+fun MenuItemDetailsScreen(navController: NavController = rememberNavController(), menuItem: MenuItem){
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -203,28 +211,47 @@ fun MenuItemDetailsScreen(navController: NavController = rememberNavController()
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text("Hello, welcome to the details for your item.")
+        Text("Hello, welcome to the details for your item:")
+        Text(menuItem.title)
     }
 }
 
+/*
 @Preview
 @Composable
 fun MenuItemDetailsScreenPreview(){
-    MenuItemDetailsScreen()
+    MenuItemDetailsScreen(rememberNavController(), menuItem = MenuItem("Chicken Katsu", "11.99"))
 }
-
+*/
 @Composable
 fun MyOrderScreen(navController: NavController = rememberNavController(), currentOrder: CurrentOrder){
-    Box(modifier = Modifier.background(Background)){
+    Column(
+        modifier = Modifier
+            .background(Background)
+            //.fillMaxSize()
+    ){
+        Text(
+            text = "Current Items: ",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+
+        )
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
+                .fillMaxWidth()
                 .padding(8.dp)
         ) {
             items(currentOrder.orderItems) { item ->
-                MenuItemCard(item = item, onClick = {navController.navigate("item_details")})
+                MenuItemCard(item = item, "Remove", onClick = {currentOrder.orderItems.remove(item)})
             }
         }
+        var total = currentOrder.currentTotalAsString()
+        Text(
+            text = "Total: $total",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp)
+
+        )
     }
 }
 
@@ -239,7 +266,6 @@ fun MyOrderScreenPreview(){
     currentOrder.orderItems.add(testItem)
     MyOrderScreen(rememberNavController(), currentOrder)
 }
-
 
 @Composable
 fun BottomNavButton(navController: NavController){

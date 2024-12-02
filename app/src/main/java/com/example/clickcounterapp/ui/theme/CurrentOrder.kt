@@ -12,5 +12,14 @@ import com.example.clickcounterapp.MenuItem
 class CurrentOrder : ViewModel(){
     val orderItems = mutableStateListOf<MenuItem>() // stores menuItem info i.e. name & price
     val numItems = mutableStateListOf<Int>()        //Parallel vector tracks number of each item
+
+    fun currentTotalAsString(): String{
+        var total: Double = 0.0
+        for(item in orderItems){
+            total += item.price.toDouble()
+        }
+        //return total.toString().format("$%.2f")
+        return String.format("%.2f", total)
+    }
 }
 
